@@ -19,6 +19,7 @@ function binData(data: number[], numBins: number) {
   const binWidth = (max - min) / numBins;
   const bins = Array(numBins).fill(0);
   const binLabels = Array(numBins).map((_, i) => min + i * binWidth);
+  // const binLabels = Array.from({ length: numBins }, (_, i) => min + i * binWidth); // this is the fix line
 
   data.forEach(value => {
     const binIndex = Math.min(Math.floor((value - min) / binWidth), numBins - 1);
