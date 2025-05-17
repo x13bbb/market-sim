@@ -40,5 +40,6 @@ describe('NormalDistributionChart', () => {
     const instance = Chart.mock.results[0].value;
     expect(instance).toBeDefined();
     expect(instance.config.type).toBe('bar');
+    expect(instance.config.options.IndexAxis).toBe('y');
   });
 });
