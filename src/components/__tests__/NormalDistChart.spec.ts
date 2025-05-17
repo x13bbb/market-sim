@@ -41,5 +41,9 @@ describe('NormalDistributionChart', () => {
     expect(instance).toBeDefined();
     expect(instance.config.type).toBe('bar');
     expect(instance.config.options.IndexAxis).toBe('y');
+    expect(instance.config.data.datasets).toHaveLength(2);
+
+    const lineDataset = instance.config.data.datasets.find(dataset => dataset.type === 'line');
+    expect(lineDataset).toBeDefined();
   });
 });
