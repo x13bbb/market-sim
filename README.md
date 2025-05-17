@@ -1,6 +1,9 @@
 # market-sim
-
-This template should help get you started developing with Vue 3 in Vite.
+## spec
+- [] supply and demand visualisation
+- [] price and volume
+- [] Gaussian random walk
+- [] etc?
 
 ## Recommended IDE Setup
 

@@ -1,13 +1,14 @@
 <script setup lang="ts">
+import NormalDistChart from "./components/NormalDistChart.vue"
 </script>
 
 <template>
   <header>
-    test
+    hello I am a header
   </header>
 
   <main>
-    hi
+    <NormalDistChart />
   </main>
 </template>
 
