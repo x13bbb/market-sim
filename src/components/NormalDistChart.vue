@@ -7,15 +7,20 @@ import { defineComponent, onMounted } from 'vue';
 import Chart from 'chart.js/auto';
 import { randomNormal } from 'd3-random';
 
+export function generateRandomNumbers(length: number) {
+  const randomNormalDist = randomNormal(0, 1); // Mean 0, standard deviation 1
+  // Generate random numbers based on normal distribution
+  return Array.from({ length }, randomNormalDist);
+}
+
 export default defineComponent({
   name: 'NormalDistributionChart',
   setup() {
     onMounted(() => {
       const ctx: HTMLCanvasElement | null = document.getElementById('myChart');
-      const randomNormalDist = randomNormal(0, 1);  // Mean 0, standard deviation 1
 
-      // Generate 1000 random numbers based on normal distribution
-      const randomNumbers = Array.from({ length: 1000 }, randomNormalDist);
+      // Use the refactored function
+      const randomNumbers = generateRandomNumbers(1000);
 
       // Create chart data
       const chartData = {
@@ -33,18 +38,14 @@ export default defineComponent({
 
       // Create the chart
       new Chart(ctx, {
-        type: 'line',  // or 'bar', 'scatter', etc. depending on how you want to visualize the data
+        type: 'line',
         data: chartData,
         options: {
           responsive: true,
           scales: {
-            x: {
-              display: false
-            },
-            y: {
-              beginAtZero: true
-            }
-          }
+            x: { display: false },
+            y: { beginAtZero: true },
+          },
         },
       });
     });
