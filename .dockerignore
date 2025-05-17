@@ -7,4 +7,5 @@
 !run_tests.sh
 !src
 !test
-!vite.config.js
+!vite.config.ts
+!vitest.config.ts
