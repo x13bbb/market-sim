@@ -32,7 +32,7 @@ vi.mock('chart.js/auto', async () => {
 import Chart from 'chart.js/auto';
 
 describe('NormalDistributionChart', () => {
-  it('should configure the chart as a line chart', async () => {
+  it('should configure the chart as a bar chart + normal dist line', async () => {
     mount(NormalDistributionChart);
 
     await new Promise(setImmediate);
