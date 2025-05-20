@@ -7,8 +7,8 @@ import { defineComponent, onMounted } from 'vue';
 import Chart from 'chart.js/auto';
 import { randomNormal } from 'd3-random';
 
-export function generateRandomNumbers(length: number) {
-  const randomNormalDist = randomNormal(0, 1);
+export function generateRandomNumbers(length: number, mean: number, stdDev:number) {
+  const randomNormalDist = randomNormal(mean, stdDev);
   return Array.from({ length }, randomNormalDist);
 }
 
@@ -18,7 +18,9 @@ function binData(data: number[], numBins: number) {
   const max = Math.max(...data);
   const binWidth = (max - min) / numBins;
   const bins = Array(numBins).fill(0);
-  const binLabels = Array.from({ length: numBins }, (_, i) => min + i * binWidth); // Fixed bug
+  const binLabels = Array.from({ length: numBins }, (_, i) =>
+    parseFloat((min + i * binWidth).toFixed(2))
+  );
 
   data.forEach(value => {
     const binIndex = Math.min(Math.floor((value - min) / binWidth), numBins - 1);
@@ -37,15 +39,18 @@ export default defineComponent({
   name: 'NormalDistributionChart',
   setup() {
     onMounted(() => {
+      const price_mean = 100;
+      const price_sd = 5;
+
       const ctx: HTMLCanvasElement | null = document.getElementById('myChart');
-      const randomNumbers = generateRandomNumbers(1000);
+      const randomNumbers = generateRandomNumbers(1000, price_mean, price_sd);
 
       // Bin the data for the histogram
-      const numBins = 50;
+      const numBins = 16;
       const { bins, binLabels } = binData(randomNumbers, numBins);
 
       // Generate smooth normal distribution data
-      const smoothData = binLabels.map(x => gaussian(x, 0, 1) * randomNumbers.length * (binLabels[1] - binLabels[0]));
+      const smoothData = binLabels.map(x => gaussian(x, price_mean, price_sd) * randomNumbers.length * (binLabels[1] - binLabels[0]));
 
       const chartData = {
         labels: binLabels,
@@ -73,7 +78,7 @@ export default defineComponent({
         ],
       };
 
-      console.log("instantiate Chart")
+
       new Chart(ctx, {
         type: 'line',
         data: chartData,
@@ -88,11 +93,13 @@ export default defineComponent({
             y: {
               display: true,
               title: { display: true, text: 'Value' },
+              reverse: true,
             },
             y1: { // Secondary y-axis for the smooth line
               position: 'right',
               display: false, // Hide it to avoid clutter
               grid: { drawOnChartArea: false },
+              reverse: true,
             },
           },
         },
@@ -103,5 +110,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
+#myChart {
+  max-width: 400px;
+  max-height: 300px;
+  width: 100%;
+  height: auto;
+}
 </style>
