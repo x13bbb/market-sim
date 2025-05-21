@@ -20,13 +20,11 @@ Thinking about what I'm looking to achieve with this project.
     
 - intuitive understanding of supply, demand, and volume and it's reaction to news/sentiment.
 
-
-
-
--[] supply and demand visualisation
--[] price and volume
--[] Gaussian random walk sims
--[] etc?
+# progress
+- [ ] supply and demand viz
+- [ ] price and volume viz
+- [ ] Gaussian random walk sims
+- [ ] ?
 
 ## Recommended IDE Setup
 
