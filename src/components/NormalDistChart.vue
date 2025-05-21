@@ -1,22 +1,13 @@
 <template>
-  <canvas id="myChart"></canvas>
+  <canvas id="normChart"></canvas>
 </template>
 
 <script lang="ts">
 import { defineComponent, onMounted } from 'vue';
 import Chart from 'chart.js/auto';
 import type { ChartData } from 'chart.js';
-import { randomNormal } from 'd3-random';
 import type { UserOrder } from '@/models/orderbook';
-
-export function generateRandomNumbers(length: number, mean: number, stdDev: number, precision: number = 2): number[] {
-  const randNorm = randomNormal(mean, stdDev);
-  return Array.from({ length }, () => parseFloat(randNorm().toFixed(precision)));
-}
-
-function generateRandomBools(length: number): boolean[] {
-  return Array.from({ length }, () => Math.random() < 0.5);
-}
+import { genNumNorm, genBools } from '@/utils/rand';
 
 function binData(data: number[], numBins: number) {
   const min = Math.min(...data);
@@ -40,9 +31,9 @@ function gaussian(x: number, mean: number, stdDev: number) {
 }
 
 function generateRandomOrders(length: number, priceMean: number, priceStdDev: number, qtyMean: number, qtyStdDev: number): UserOrder[] {
-  const prices = generateRandomNumbers(length, priceMean, priceStdDev);
-  const quantities = generateRandomNumbers(length, qtyMean, qtyStdDev, 0);
-  const sides = generateRandomBools(length);
+  const prices = genNumNorm(length, priceMean, priceStdDev);
+  const quantities = genNumNorm(length, qtyMean, qtyStdDev, 0);
+  const sides = genBools(length);
 
   return prices.map((price, index) => ({
     price,
@@ -99,7 +90,7 @@ export default defineComponent({
         ],
       };
 
-      const ctx = document.getElementById('myChart') as HTMLCanvasElement | null;
+      const ctx = document.getElementById('normChart') as HTMLCanvasElement | null;
       if (!ctx) return;
 
       new Chart(ctx, {
@@ -133,7 +124,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-#myChart {
+#normChart {
   max-width: 400px;
   max-height: 300px;
   width: 100%;
