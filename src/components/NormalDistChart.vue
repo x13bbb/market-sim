@@ -5,14 +5,19 @@
 <script lang="ts">
 import { defineComponent, onMounted } from 'vue';
 import Chart from 'chart.js/auto';
+import type { ChartData } from 'chart.js';
 import { randomNormal } from 'd3-random';
+import type { UserOrder } from '@/models/orderbook';
 
-export function generateRandomNumbers(length: number, mean: number, stdDev:number) {
-  const randomNormalDist = randomNormal(mean, stdDev);
-  return Array.from({ length }, randomNormalDist);
+export function generateRandomNumbers(length: number, mean: number, stdDev: number, precision: number = 2): number[] {
+  const randNorm = randomNormal(mean, stdDev);
+  return Array.from({ length }, () => parseFloat(randNorm().toFixed(precision)));
 }
 
-// New function to bin data for histogram
+function generateRandomBools(length: number): boolean[] {
+  return Array.from({ length }, () => Math.random() < 0.5);
+}
+
 function binData(data: number[], numBins: number) {
   const min = Math.min(...data);
   const max = Math.max(...data);
@@ -30,9 +35,20 @@ function binData(data: number[], numBins: number) {
   return { bins, binLabels };
 }
 
-// New function for smooth normal distribution
 function gaussian(x: number, mean: number, stdDev: number) {
   return (1 / (stdDev * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * ((x - mean) / stdDev) ** 2);
+}
+
+function generateRandomOrders(length: number, priceMean: number, priceStdDev: number, qtyMean: number, qtyStdDev: number): UserOrder[] {
+  const prices = generateRandomNumbers(length, priceMean, priceStdDev);
+  const quantities = generateRandomNumbers(length, qtyMean, qtyStdDev, 0);
+  const sides = generateRandomBools(length);
+
+  return prices.map((price, index) => ({
+    price,
+    quantity: quantities[index],
+    side: sides[index] ? 'buy' : 'sell',
+  }));
 }
 
 export default defineComponent({
@@ -42,22 +58,27 @@ export default defineComponent({
       const price_mean = 100;
       const price_sd = 5;
 
-      const ctx: HTMLCanvasElement | null = document.getElementById('myChart');
-      const randomNumbers = generateRandomNumbers(1000, price_mean, price_sd);
+      const qty_mean = 50;
+      const qty_sd = 2;
 
+      const randomOrders: UserOrder[] = generateRandomOrders(1000, price_mean, price_sd, qty_mean, qty_sd);
+      const buyPrices = randomOrders
+        .filter(order => order.side === 'buy')
+        .map(order => order.price);
+        
       // Bin the data for the histogram
       const numBins = 16;
-      const { bins, binLabels } = binData(randomNumbers, numBins);
-
+      const { bins, binLabels } = binData(buyPrices, numBins);
+      
       // Generate smooth normal distribution data
-      const smoothData = binLabels.map(x => gaussian(x, price_mean, price_sd) * randomNumbers.length * (binLabels[1] - binLabels[0]));
-
-      const chartData = {
+      const smoothData = binLabels.map(x => gaussian(x, price_mean, price_sd) * buyPrices.length * (binLabels[1] - binLabels[0]));
+      
+      const chartData: ChartData<'bar' | 'line'> = {
         labels: binLabels,
         datasets: [
           {
             label: 'Histogram',
-            type: 'bar', // Bar chart for histogram
+            type: 'bar',
             data: bins,
             backgroundColor: 'rgba(75, 192, 192, 0.5)',
             borderColor: 'rgba(75, 192, 192, 1)',
@@ -67,20 +88,22 @@ export default defineComponent({
           },
           {
             label: 'Normal Distribution',
-            type: 'line', // Line chart for smooth curve
+            type: 'line',
             data: smoothData,
             borderColor: 'rgba(255, 99, 132, 1)',
             borderWidth: 2,
             fill: false,
-            tension: 0.4, // Smooth the line
-            yAxisID: 'y1', // Use secondary y-axis for the line
+            tension: 0.4,
+            yAxisID: 'y1',
           },
         ],
       };
 
+      const ctx = document.getElementById('myChart') as HTMLCanvasElement | null;
+      if (!ctx) return;
 
       new Chart(ctx, {
-        type: 'line',
+        type: 'bar',
         data: chartData,
         options: {
           responsive: true,

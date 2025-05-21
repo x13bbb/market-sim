@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { OrderBook, UserOrder } from '../orderbook';
+import { OrderBook } from '../orderbook';
+import type { UserOrder } from '../orderbook';
 
 describe('OrderBook', () => {
   let book: OrderBook;
@@ -44,11 +45,11 @@ describe('OrderBook', () => {
 
   it('does not match buy order above limit price', () => {
     // Add ask at 105
-    const ask: Order = { price: 105, quantity: 5, side: 'sell' };
+    const ask: UserOrder = { price: 105, quantity: 5, side: 'sell' };
     book.processOrder(ask);
 
     // Buy order with max price 100 should not match
-    const buyOrder: Order = { price: 100, quantity: 5, side: 'buy' };
+    const buyOrder: UserOrder = { price: 100, quantity: 5, side: 'buy' };
     book.processOrder(buyOrder);
 
     const snapshot = book.getOrderBookSnapshot();
