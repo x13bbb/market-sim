@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import NormalDistChart from "./components/NormalDistChart.vue"
+// import Line from "./components/Line.vue";
+import SupplyDemand from "./components/SupplyDemand.vue";
+// import NormalDistChart from "./components/NormalDistChart.vue"
 </script>
 
 <template>
@@ -8,7 +10,9 @@ import NormalDistChart from "./components/NormalDistChart.vue"
   </header>
 
   <main>
-    <NormalDistChart />
+    <!-- <NormalDistChart /> -->
+     <!-- <Line /> -->
+     <SupplyDemand />
   </main>
 </template>
 
